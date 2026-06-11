@@ -254,22 +254,7 @@ let TGL_VALUES = [3, 8, 10, 9, 2, 16, 12, 3, 2, 4, 3, 2, 3, 5, 10, 7, 4, 8, 16];
 let CBR_NAMES = ["Elfrida Suryati", "Jack Roka", "Laurensius Herbianto", "Leonardus M. Mawardi", "Magdalena Sabe", "Maria Diana Banut", "Miseldis Halmida", "Stanis J. Ngalu"];
 
 // Working data (can be replaced by upload)
-// OBS default kosong — data dari localStorage atau upload
-let OBS = [];
-
-// ════ LOCALSTORAGE: PERSIST DATA ACROSS REFRESH ════
-(function(){
-  try {
-    var saved = localStorage.getItem('scn_obs_data');
-    var savedFn = localStorage.getItem('scn_obs_file');
-    if(savedFn) FILENAME_OBS = savedFn;
-    if(saved){
-      OBS = JSON.parse(saved);
-      rebuildAll(OBS);
-      rebuildChartVars();
-    }
-  } catch(e){ console.warn('localStorage load failed:', e); }
-})();
+let OBS = []; // default kosong, diisi localStorage atau upload
 let TF  = JSON.parse(JSON.stringify(THEMES_FULL));
 let FQ  = JSON.parse(JSON.stringify(FULL_QUOTES));
 
@@ -308,7 +293,6 @@ function labelAnim(vert=true){
 // ════ RINGKASAN ════
 function renderRingkasan(){
   updateKPI();
-  rebuildChartVars();
   mk('c-cbr','bar',{
     labels: CBR_LABELS,
     datasets:[{data:CBR_VALUES,backgroundColor:CBR_COLORS_LIST,borderRadius:6,borderSkipped:false}]
@@ -426,8 +410,13 @@ function handleFile(file){
         setStatus('❌ Tidak ada data valid. Pastikan kolom: Nama Anak, CBR Worker, Tanggal ada di Excel.','err'); 
         return; 
       }
-      OBS = parsed; rebuildAll(parsed); rebuildChartVars();
-      try{localStorage.setItem('scn_obs_data',JSON.stringify(OBS));localStorage.setItem('scn_obs_file',FILENAME_OBS);}catch(e){}
+      OBS = parsed;
+      rebuildAll(OBS);
+      rebuildChartVars();
+      try{
+        localStorage.setItem('scn_obs_data', JSON.stringify(OBS));
+        localStorage.setItem('scn_obs_file', FILENAME_OBS);
+      }catch(e){ console.warn('localStorage save error:', e); }
       Object.keys(CHARTS).forEach(k=>{try{CHARTS[k].destroy();}catch(e){}});
       CHARTS = {};
       renderRingkasan();
@@ -440,6 +429,49 @@ function handleFile(file){
 
 function findCol(headers, patterns){
   for(const p of patterns){const i=headers.findIndex(h=>h&&String(h).toLowerCase().includes(p.toLowerCase()));if(i>=0)return i;}return -1;
+}
+
+
+// ── NAMA BULAN INDONESIA ──
+var BULAN_ID = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+// ── parseTanggal: handle Excel serial, DD/MM/YYYY, DD-MM-YYYY, YYYY-MM-DD, ISO, Date ──
+function parseTanggal(val){
+  if(!val && val !== 0) return null;
+  // Sudah Date object
+  if(val instanceof Date) return isNaN(val) ? null : val;
+  // Excel serial number (angka, biasanya 40000-50000)
+  if(typeof val === 'number'){
+    // Excel epoch: 1 Jan 1900 = serial 1 (dengan bug Lotus: 1900 dianggap leap year)
+    var excelEpoch = new Date(1899, 11, 30);
+    var d = new Date(excelEpoch.getTime() + val * 86400000);
+    return isNaN(d) ? null : d;
+  }
+  var s = String(val).trim().split(' ')[0]; // ambil bagian tanggal saja
+  if(!s) return null;
+  // DD/MM/YYYY atau DD-MM-YYYY
+  var dmy = s.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);
+  if(dmy){
+    var d = new Date(parseInt(dmy[3]), parseInt(dmy[2])-1, parseInt(dmy[1]));
+    return isNaN(d) ? null : d;
+  }
+  // YYYY-MM-DD atau YYYY/MM/DD
+  var ymd = s.match(/^(\d{4})[\/-](\d{1,2})[\/-](\d{1,2})/);
+  if(ymd){
+    var d = new Date(parseInt(ymd[1]), parseInt(ymd[2])-1, parseInt(ymd[3]));
+    return isNaN(d) ? null : d;
+  }
+  // ISO timestamp
+  var d = new Date(s);
+  return isNaN(d) ? null : d;
+}
+
+// ── formatTanggalIndonesia: Date → "13 Mei" atau "13 Mei 2025" ──
+function formatTanggalIndonesia(d, showYear){
+  if(!d || isNaN(d)) return '?';
+  var label = d.getDate() + ' ' + BULAN_ID[d.getMonth()];
+  if(showYear) label += ' ' + d.getFullYear();
+  return label;
 }
 
 function parseOBS(headers, rows){
@@ -480,20 +512,10 @@ function parseOBS(headers, rows){
     if(!na) continue;
     if(na.includes('uuid:')||na.includes('rootUuid')) continue;
     
-    const tgl = sv(row, iTgl)||'';
-    // Parse tanggal — handle YYYY-MM-DD, DD/MM/YYYY, DD-MM-YYYY
-    function parseTgl(s){
-      if(!s) return '';
-      s = s.trim().split(' ')[0]; // ambil bagian tanggal saja
-      // DD/MM/YYYY atau DD-MM-YYYY
-      const dmy = s.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);
-      if(dmy) return dmy[3]+'-'+dmy[2].padStart(2,'0')+'-'+dmy[1].padStart(2,'0');
-      // YYYY-MM-DD atau YYYY/MM/DD
-      const ymd = s.match(/^(\d{4})[\/-](\d{1,2})[\/-](\d{1,2})/);
-      if(ymd) return ymd[1]+'-'+ymd[2].padStart(2,'0')+'-'+ymd[3].padStart(2,'0');
-      return s.substring(0,10);
-    }
-    const tglDate = parseTgl(tgl);
+    // Ambil nilai tanggal raw dari Excel (bisa string atau number)
+    var tglRaw = (iTgl>=0 && iTgl<row.length) ? row[iTgl] : null;
+    var tglObj = parseTanggal(tglRaw);
+    var tglDate = tglObj ? (tglObj.getFullYear()+'-'+String(tglObj.getMonth()+1).padStart(2,'0')+'-'+String(tglObj.getDate()).padStart(2,'0')) : '';
     
     if(!byName[na]||tglDate>byName[na].tgl){
       byName[na] = {
@@ -517,18 +539,19 @@ function updateKPI(){
   var unik = [...new Set(OBS.map(function(r){return r.na;}).filter(Boolean))].length;
   var dgGPS = OBS.filter(function(r){return r.lat&&r.lon;}).length;
   var tgls = [...new Set(OBS.map(function(r){return r.tgl;}).filter(Boolean))];
-  var el = document.getElementById('h-total'); if(el) el.textContent = OBS.length;
-  var el2 = document.getElementById('kpi-unik'); if(el2) el2.textContent = unik;
+  var el = document.getElementById('h-total'); if(el) el.textContent = OBS.length||'—';
+  var el2 = document.getElementById('kpi-unik'); if(el2) el2.textContent = unik||'—';
   var el3 = document.getElementById('dataBadge');
   if(el3) el3.textContent = OBS.length ? (String.fromCodePoint(128193)+' '+OBS.length+' kunjungan aktif') : 'Belum ada data diunggah';
   var kv = document.querySelectorAll('.kpi .v');
-  if(kv[0]) kv[0].textContent = OBS.length || '—';
-  if(kv[1]) kv[1].textContent = unik || '—';
-  if(kv[2]) kv[2].textContent = tgls.length || '—';
-  if(kv[3]) kv[3].textContent = dgGPS || '—';
+  if(kv[0]) kv[0].textContent = OBS.length||'—';
+  if(kv[1]) kv[1].textContent = unik||'—';
+  if(kv[2]) kv[2].textContent = tgls.length||'—';
+  if(kv[3]) kv[3].textContent = dgGPS||'—';
 }
 
 function rebuildChartVars(){
+  // CBR stats
   var cbrMap = {}, cbrNameMap = {};
   OBS.forEach(function(r){
     var full = (r.cb||'').trim();
@@ -544,19 +567,23 @@ function rebuildChartVars(){
   CBR_NAMES  = keys.map(function(k){ return cbrNameMap[k]; });
   CBR_COLORS_LIST = keys.map(function(_,i){ return palette[i%palette.length]; });
 
-  // Tanggal — sudah dalam format YYYY-MM-DD, sort ascending
+  // Tanggal — sudah dalam format YYYY-MM-DD di field r.tgl
   var tglMap = {};
   OBS.forEach(function(r){
     var t = (r.tgl||'').trim();
     if(!t) return;
     tglMap[t] = (tglMap[t]||0)+1;
   });
-  var tglKeys = Object.keys(tglMap).sort(); // sort YYYY-MM-DD = kronologis benar
+  // Sort YYYY-MM-DD = kronologis benar
+  var tglKeys = Object.keys(tglMap).sort();
+  // Cek apakah perlu tampilkan tahun (jika ada >1 tahun)
+  var years = new Set(tglKeys.map(function(t){ return t.substring(0,4); }));
+  var showYear = years.size > 1;
   TGL_LABELS = tglKeys.map(function(t){
     var parts = t.split('-');
     if(parts.length===3){
       var d = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
-      return isNaN(d) ? t : d.toLocaleDateString('id-ID',{day:'numeric',month:'short'});
+      return formatTanggalIndonesia(d, showYear);
     }
     return t;
   });
@@ -661,7 +688,20 @@ function switchTab(id, btn){
 }
 
 // ════ INIT ════
-window.addEventListener('load', renderRingkasan);
+window.addEventListener('DOMContentLoaded', function(){
+  // Muat data dari localStorage sebelum render apapun
+  try {
+    var saved = localStorage.getItem('scn_obs_data');
+    var savedFn = localStorage.getItem('scn_obs_file');
+    if(savedFn) FILENAME_OBS = savedFn;
+    if(saved){
+      OBS = JSON.parse(saved);
+      rebuildAll(OBS);      // update TF, FQ dari data tersimpan
+      rebuildChartVars();   // update CBR_LABELS, TGL_LABELS, dll
+    }
+  } catch(e){ console.warn('localStorage load error:', e); }
+  renderRingkasan();        // render dengan data yang sudah benar
+});
 </script>
 </body>
 </html>
