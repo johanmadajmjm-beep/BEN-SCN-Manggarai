@@ -6,266 +6,298 @@
 <title>SCN Manggarai – Data Portal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #07090f;
-  --sur: #0d1220;
-  --card: #111827;
-  --card2: #161f30;
-  --bdr: #1e2d47;
-  --bdr2: #253654;
-  --acc: #06b6d4;
-  --acc2: #0891b2;
-  --grn: #22c55e;
-  --amb: #f59e0b;
-  --red: #ef4444;
-  --pur: #a78bfa;
-  --txt: #e8edf5;
-  --mut: #6b7a96;
-  --faint: #1a2540;
-  --obs: #06b6d4;
-  --ben: #a78bfa;
-  --rnd: 12px;
+:root{
+  --bg:#050810;
+  --sur:#0a0f1e;
+  --card:#0e1628;
+  --card2:#131d35;
+  --bdr:#1c2a45;
+  --bdr2:#243558;
+  --txt:#f0f4ff;
+  --mut:#5a6a8a;
+  --mut2:#7a8faf;
+  --faint:#111c35;
+
+  --ben:#f97316;
+  --ben2:#fb923c;
+  --ben-bg:rgba(249,115,22,.08);
+  --ben-bdr:rgba(249,115,22,.25);
+
+  --obs:#06b6d4;
+  --obs2:#22d3ee;
+  --obs-bg:rgba(6,182,212,.08);
+  --obs-bdr:rgba(6,182,212,.25);
+
+  --grn:#22c55e;
+  --red:#ef4444;
+  --pur:#a78bfa;
+
+  --sb:220px;
+  --rnd:14px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--txt);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;min-height:100vh;overflow-x:hidden}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--txt);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;display:flex}
 
-/* ── TOPBAR ── */
-.topbar{position:fixed;top:0;left:0;right:0;z-index:300;height:52px;background:rgba(7,9,15,.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--bdr);display:flex;align-items:center;padding:0 20px;gap:16px}
-.topbar-logo{display:flex;align-items:center;gap:10px;flex-shrink:0}
-.logo-mark{width:32px;height:32px;background:linear-gradient(135deg,var(--acc),var(--pur));border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff;letter-spacing:-.5px;flex-shrink:0}
-.logo-text{font-size:13px;font-weight:700;color:var(--txt);line-height:1.2}
-.logo-text small{display:block;font-size:10px;font-weight:400;color:var(--mut)}
-.topbar-nav{display:flex;align-items:center;gap:2px;margin-left:20px}
-.tnav{padding:5px 12px;border-radius:7px;border:none;background:transparent;color:var(--mut);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap}
-.tnav:hover{color:var(--txt);background:var(--faint)}
-.tnav.act{color:var(--acc);background:rgba(6,182,212,.12)}
-.tnav.obs.act{color:var(--obs);background:rgba(6,182,212,.12)}
-.tnav.ben.act{color:var(--ben);background:rgba(167,139,250,.12)}
-.topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px}
-.status-dot{width:7px;height:7px;border-radius:50%;background:var(--grn);animation:pulse 2.5s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.version-badge{font-size:10px;color:var(--mut);background:var(--faint);padding:3px 8px;border-radius:20px;border:1px solid var(--bdr)}
+/* ══ SIDEBAR ══ */
+.sb{width:var(--sb);flex-shrink:0;height:100vh;background:var(--sur);border-right:1px solid var(--bdr);display:flex;flex-direction:column;position:relative;z-index:100}
 
-/* ── VIEWS ── */
-.view{display:none;padding-top:52px;min-height:100vh}
-.view.act{display:block}
+.sb-logo{padding:20px 18px 16px;border-bottom:1px solid var(--bdr)}
+.sb-logo-mark{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#fff;letter-spacing:-.5px;margin-bottom:10px;position:relative;overflow:hidden;background:var(--ben)}
+.sb-logo-mark::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.2),transparent)}
+.sb-org{font-size:13px;font-weight:800;color:var(--txt);line-height:1.2;font-family:'Manrope',sans-serif}
+.sb-sub{font-size:10px;color:var(--mut2);margin-top:2px;font-weight:500}
 
-/* ── HOME PAGE ── */
-.home-wrap{max-width:1100px;margin:0 auto;padding:60px 24px 60px;min-height:calc(100vh - 52px);display:flex;align-items:center;justify-content:center}.home-inner{width:100%}
+.sb-section{padding:14px 12px 6px;font-size:9px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--mut)}
 
-.home-hero{text-align:center;padding:60px 20px 50px;position:relative}
-.hero-eyebrow{display:inline-block;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--acc);background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.2);padding:5px 14px;border-radius:20px;margin-bottom:20px}
-.hero-title{font-family:'Manrope',sans-serif;font-size:42px;font-weight:800;line-height:1.15;letter-spacing:-1.5px;color:var(--txt);margin-bottom:14px}
-.hero-title .accent-obs{color:var(--obs)}
-.hero-title .accent-ben{color:var(--ben)}
-.hero-sub{font-size:15px;color:var(--mut);max-width:540px;margin:0 auto 36px;line-height:1.75}
-.hero-stats{display:flex;gap:32px;justify-content:center;flex-wrap:wrap;margin-bottom:0}
-.hstat{text-align:center}
-.hstat .val{font-size:28px;font-weight:800;line-height:1;font-family:'Manrope',sans-serif}
-.hstat .lbl{font-size:11px;color:var(--mut);margin-top:4px;text-transform:uppercase;letter-spacing:.6px}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 12px;margin:1px 8px;border-radius:10px;cursor:pointer;transition:all .18s;border:1px solid transparent;position:relative}
+.sb-item:hover{background:var(--faint);color:var(--txt)}
+.sb-item.act-ben{background:var(--ben-bg);border-color:var(--ben-bdr);color:var(--ben)}
+.sb-item.act-obs{background:var(--obs-bg);border-color:var(--obs-bdr);color:var(--obs)}
+.sb-item.act-home{background:var(--faint);border-color:var(--bdr2);color:var(--txt)}
 
-.section-title{font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--mut);margin-bottom:16px;display:flex;align-items:center;gap:8px}
-.section-title::before{content:'';width:20px;height:2px;background:var(--acc);border-radius:1px}
+.sb-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;transition:all .18s}
+.sb-item.act-ben .sb-icon{background:rgba(249,115,22,.15)}
+.sb-item.act-obs .sb-icon{background:rgba(6,182,212,.15)}
+.sb-item.act-home .sb-icon{background:rgba(255,255,255,.06)}
+.sb-item:not(.act-ben):not(.act-obs):not(.act-home) .sb-icon{background:rgba(255,255,255,.04)}
 
-/* ── DASHBOARD CARDS ── */
-.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
-@media(max-width:700px){.dash-grid{grid-template-columns:1fr}}
+.sb-label{font-size:12px;font-weight:700;flex:1;line-height:1.2}
+.sb-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;flex-shrink:0}
+.sb-item.act-ben .sb-badge{background:rgba(249,115,22,.15);color:var(--ben)}
+.sb-item.act-obs .sb-badge{background:rgba(6,182,212,.15);color:var(--obs)}
+.sb-item:not(.act-ben):not(.act-obs) .sb-badge{background:var(--faint);color:var(--mut2)}
 
-.dash-card{background:var(--card);border:1px solid var(--bdr);border-radius:16px;padding:24px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden}
-.dash-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--dc-color,var(--acc));opacity:.8}
-.dash-card:hover{border-color:var(--dc-color,var(--acc));transform:translateY(-2px);background:var(--card2)}
-.dash-card:hover .dc-arrow{opacity:1;transform:translateX(0)}
+.sb-indicator{position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:60%;border-radius:0 3px 3px 0}
+.sb-item.act-ben .sb-indicator{background:var(--ben)}
+.sb-item.act-obs .sb-indicator{background:var(--obs)}
 
-.dc-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
-.dc-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-.dc-badge{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:4px 10px;border-radius:20px;border:1px solid;flex-shrink:0}
-.dc-arrow{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;opacity:0;transform:translateX(-4px);transition:all .2s;flex-shrink:0}
+.sb-footer{margin-top:auto;padding:14px 16px;border-top:1px solid var(--bdr);font-size:10px;color:var(--mut);line-height:1.7}
+.sb-status{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.dot-live{width:6px;height:6px;border-radius:50%;background:var(--grn);animation:blink 2.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
-.dc-title{font-size:18px;font-weight:800;line-height:1.2;margin-bottom:6px;font-family:'Manrope',sans-serif}
-.dc-desc{font-size:12px;color:var(--mut);line-height:1.65;margin-bottom:18px}
+/* ══ MAIN AREA ══ */
+.main{flex:1;height:100vh;display:flex;flex-direction:column;overflow:hidden}
 
-.dc-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
-.dc-tab{font-size:11px;font-weight:600;padding:3px 9px;border-radius:6px;background:var(--faint);color:var(--mut);border:1px solid var(--bdr)}
+/* ══ HOME VIEW ══ */
+.view{display:none;flex:1;overflow:hidden}
+.view.act{display:flex;flex-direction:column}
 
-.dc-meta{display:flex;gap:16px;flex-wrap:wrap}
-.dc-meta-item{font-size:11px;color:var(--mut)}
-.dc-meta-item span{color:var(--txt);font-weight:600}
+.home-view{overflow-y:auto;padding:48px 40px}
+.home-center{max-width:860px;margin:0 auto}
 
-.dc-open-btn{display:flex;align-items:center;gap:6px;margin-top:20px;padding:10px 16px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;width:100%;justify-content:center;transition:all .15s}
+.home-greeting{margin-bottom:40px}
+.home-eyebrow{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--ben);margin-bottom:10px}
+.home-title{font-family:'Manrope',sans-serif;font-size:36px;font-weight:800;line-height:1.15;letter-spacing:-1px;color:var(--txt);margin-bottom:10px}
+.home-title em{font-style:normal;color:var(--ben)}
+.home-desc{font-size:14px;color:var(--mut2);line-height:1.8;max-width:500px}
 
-/* OBS card */
-.dash-card.obs{--dc-color:var(--obs)}
-.dash-card.obs .dc-icon{background:rgba(6,182,212,.12);color:var(--obs)}
-.dash-card.obs .dc-badge{background:rgba(6,182,212,.1);border-color:rgba(6,182,212,.3);color:var(--obs)}
-.dash-card.obs .dc-title{color:var(--obs)}
-.dash-card.obs .dc-arrow{background:rgba(6,182,212,.1);color:var(--obs)}
-.dash-card.obs .dc-open-btn{background:rgba(6,182,212,.12);border:1px solid rgba(6,182,212,.3);color:var(--obs)}
-.dash-card.obs .dc-open-btn:hover{background:rgba(6,182,212,.2)}
+.home-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:680px){.home-cards{grid-template-columns:1fr}}
 
-/* BEN card */
-.dash-card.ben{--dc-color:var(--ben)}
-.dash-card.ben .dc-icon{background:rgba(167,139,250,.12);color:var(--ben)}
-.dash-card.ben .dc-badge{background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.3);color:var(--ben)}
-.dash-card.ben .dc-title{color:var(--ben)}
-.dash-card.ben .dc-arrow{background:rgba(167,139,250,.1);color:var(--ben)}
-.dash-card.ben .dc-open-btn{background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.3);color:var(--ben)}
-.dash-card.ben .dc-open-btn:hover{background:rgba(167,139,250,.2)}
+/* ── PORTAL CARD ── */
+.portal-card{border-radius:var(--rnd);padding:0;cursor:pointer;transition:all .22s;position:relative;overflow:hidden;border:1px solid var(--bdr)}
+.portal-card:hover{transform:translateY(-3px)}
 
-/* ── INFO ROW ── */
-.info-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:36px}
-.info-card{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:16px}
-.info-card .ic-val{font-size:22px;font-weight:800;font-family:'Manrope',sans-serif;line-height:1}
-.info-card .ic-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.7px;color:var(--mut);margin-top:5px}
-.info-card .ic-sub{font-size:11px;color:var(--mut);margin-top:3px}
+.pc-glow{position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;opacity:.12;pointer-events:none}
+.portal-card.ben-card .pc-glow{background:var(--ben)}
+.portal-card.obs-card .pc-glow{background:var(--obs)}
 
-/* ── ACTIVITY FEED ── */
-.activity-section{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:20px}
-.act-item{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--bdr)}
-.act-item:last-child{border-bottom:none;padding-bottom:0}
-.act-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
-.act-text{font-size:12px;color:var(--txt);line-height:1.5}
-.act-time{font-size:11px;color:var(--mut);margin-top:2px}
+.portal-card.ben-card{background:linear-gradient(145deg,#12100a,#0e1628);border-color:var(--ben-bdr)}
+.portal-card.ben-card:hover{border-color:var(--ben);box-shadow:0 0 30px rgba(249,115,22,.15)}
+.portal-card.obs-card{background:linear-gradient(145deg,#080f18,#0e1628);border-color:var(--obs-bdr)}
+.portal-card.obs-card:hover{border-color:var(--obs);box-shadow:0 0 30px rgba(6,182,212,.15)}
 
-/* ── IFRAME VIEWS ── */
-.dash-iframe-wrap{height:calc(100vh - 52px);position:relative}
-.dash-iframe-wrap iframe{width:100%;height:100%;border:none;display:block}
-.iframe-loading{position:absolute;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;font-size:13px;color:var(--mut)}
-.spin{width:32px;height:32px;border:2px solid var(--bdr);border-top-color:var(--acc);border-radius:50%;animation:spin .7s linear infinite}
+.pc-top-bar{height:3px;width:100%}
+.ben-card .pc-top-bar{background:linear-gradient(90deg,var(--ben),var(--ben2),transparent)}
+.obs-card .pc-top-bar{background:linear-gradient(90deg,var(--obs),var(--obs2),transparent)}
+
+.pc-body{padding:22px 22px 20px}
+
+.pc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.pc-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.ben-card .pc-icon{background:rgba(249,115,22,.12)}
+.obs-card .pc-icon{background:rgba(6,182,212,.12)}
+.pc-tag{font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;border-radius:20px}
+.ben-card .pc-tag{background:rgba(249,115,22,.12);color:var(--ben);border:1px solid var(--ben-bdr)}
+.obs-card .pc-tag{background:rgba(6,182,212,.12);color:var(--obs);border:1px solid var(--obs-bdr)}
+
+.pc-name{font-family:'Manrope',sans-serif;font-size:20px;font-weight:800;line-height:1.2;margin-bottom:6px}
+.ben-card .pc-name{color:var(--ben)}
+.obs-card .pc-name{color:var(--obs)}
+.pc-desc{font-size:12px;color:var(--mut2);line-height:1.7;margin-bottom:16px}
+
+.pc-pills{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:18px}
+.pc-pill{font-size:10px;font-weight:600;padding:3px 8px;border-radius:6px;background:rgba(255,255,255,.04);border:1px solid var(--bdr);color:var(--mut2)}
+
+.pc-meta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+.pc-meta-item{font-size:11px;color:var(--mut);font-weight:500}
+.pc-meta-item b{font-weight:700}
+.ben-card .pc-meta-item b{color:var(--ben)}
+.obs-card .pc-meta-item b{color:var(--obs)}
+
+.pc-btn{width:100%;padding:11px;border-radius:9px;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:800;letter-spacing:.2px;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.ben-card .pc-btn{background:var(--ben);color:#fff}
+.ben-card .pc-btn:hover{background:var(--ben2)}
+.obs-card .pc-btn{background:var(--obs);color:#000}
+.obs-card .pc-btn:hover{background:var(--obs2)}
+
+/* ══ IFRAME VIEWS ══ */
+.iframe-view{flex:1;overflow:hidden;position:relative}
+.iframe-view iframe{width:100%;height:100%;border:none;display:block}
+.iframe-overlay{position:absolute;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;transition:opacity .3s}
+.iframe-overlay.hidden{opacity:0;pointer-events:none}
+.loader-ring{width:36px;height:36px;border:2px solid var(--bdr2);border-top-color:var(--ben);border-radius:50%;animation:spin .7s linear infinite}
+.loader-ring.obs-ring{border-top-color:var(--obs)}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-/* ── BANNER ── */
-.obs-banner{background:rgba(6,182,212,.06);border-bottom:1px solid rgba(6,182,212,.15);padding:6px 16px;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--mut);position:sticky;top:52px;z-index:200}
-.ben-banner{background:rgba(167,139,250,.06);border-bottom:1px solid rgba(167,139,250,.15);padding:6px 16px;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--mut);position:sticky;top:52px;z-index:200}
-.banner-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
-.banner-back{margin-left:auto;padding:3px 10px;border-radius:6px;border:none;background:transparent;border:1px solid var(--bdr);color:var(--mut);font-family:inherit;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s}
-.banner-back:hover{color:var(--txt);border-color:var(--bdr2)}
-
-/* ── FOOTER ── */
-.portal-footer{text-align:center;padding:20px;font-size:11px;color:var(--mut);border-top:1px solid var(--bdr);margin-top:20px}
+.loader-text{font-size:12px;color:var(--mut2);font-weight:600}
 </style>
 </head>
 <body>
 
-<!-- TOPBAR -->
-<div class="topbar">
-  <div class="topbar-logo" onclick="goHome()" style="cursor:pointer">
-    <div class="logo-mark">SCN</div>
-    <div class="logo-text">Data Portal<small>SCN Manggarai · NTT</small></div>
+<!-- ══ SIDEBAR ══ -->
+<div class="sb">
+  <div class="sb-logo">
+    <div class="sb-logo-mark">SCN</div>
+    <div class="sb-org">Data Portal</div>
+    <div class="sb-sub">SCN Manggarai · NTT</div>
   </div>
-  <div class="topbar-nav">
-    <button class="tnav act" id="nav-home" onclick="goHome()">🏠 Beranda</button>
-    <button class="tnav obs" id="nav-obs" onclick="openDash('obs')">📊 Observasi</button>
-    <button class="tnav ben" id="nav-ben" onclick="openDash('ben')">👶 Benefisiari</button>
+
+  <div class="sb-section">Menu</div>
+
+  <div class="sb-item act-home" id="nav-home" onclick="goHome()">
+    <div class="sb-indicator"></div>
+    <div class="sb-icon">🏠</div>
+    <div class="sb-label">Beranda</div>
   </div>
-  <div class="topbar-right">
-    <div class="status-dot" title="Sistem aktif"></div>
-    <span class="version-badge">v2.0 · 2026</span>
+
+  <div class="sb-section">Dashboard</div>
+
+  <div class="sb-item" id="nav-ben" onclick="openDash('ben')">
+    <div class="sb-indicator"></div>
+    <div class="sb-icon">📋</div>
+    <div class="sb-label">Data Awal</div>
+    <div class="sb-badge">BEN</div>
+  </div>
+
+  <div class="sb-item" id="nav-obs" onclick="openDash('obs')">
+    <div class="sb-indicator"></div>
+    <div class="sb-icon">📊</div>
+    <div class="sb-label">Observasi</div>
+    <div class="sb-badge">OBS</div>
+  </div>
+
+  <div class="sb-footer">
+    <div class="sb-status"><div class="dot-live"></div><span style="color:var(--grn);font-weight:700">Online</span></div>
+    <div>BEN v10 · OBS v3 · 2026</div>
+    <div style="margin-top:2px">Manggarai Raya, NTT</div>
   </div>
 </div>
 
-<!-- HOME VIEW -->
-<div class="view act" id="view-home">
-  <div class="home-wrap">
-  <div class="home-inner">
+<!-- ══ MAIN ══ -->
+<div class="main">
 
-    <!-- DASHBOARD CARDS -->
-    <div class="dash-grid">
+  <!-- HOME -->
+  <div class="view act" id="view-home">
+    <div class="home-view">
+      <div class="home-center">
+        <div class="home-greeting">
+          <div class="home-eyebrow">Building Effective Network</div>
+          <div class="home-title">Selamat datang di<br><em>Portal Data SCN</em></div>
+          <div class="home-desc">Pilih dashboard di bawah atau gunakan menu sidebar untuk mengakses data program BEN Manggarai.</div>
+        </div>
+        <div class="home-cards">
 
-      <!-- OBS CARD -->
-      <div class="dash-card obs" onclick="openDash('obs')">
-        <div class="dc-header">
-          <div class="dc-icon">📊</div>
-          <div class="dc-badge">OBS · v3</div>
+          <!-- DATA AWAL -->
+          <div class="portal-card ben-card" onclick="openDash('ben')">
+            <div class="pc-glow"></div>
+            <div class="pc-top-bar"></div>
+            <div class="pc-body">
+              <div class="pc-head">
+                <div class="pc-icon">📋</div>
+                <div class="pc-tag">BEN · v10</div>
+              </div>
+              <div class="pc-name">Data Awal</div>
+              <div class="pc-desc">Monitoring data benefisiari anak, skor perkembangan, profil pengasuh, dan rekomendasi intervensi berbasis data.</div>
+              <div class="pc-pills">
+                <span class="pc-pill">👶 Ringkasan Anak</span>
+                <span class="pc-pill">📊 Skor</span>
+                <span class="pc-pill">🧑 Pengasuh</span>
+                <span class="pc-pill">👥 CBR Worker</span>
+                <span class="pc-pill">🗺️ Peta</span>
+                <span class="pc-pill">📋 Data Lengkap</span>
+              </div>
+              <div class="pc-meta">
+                <div class="pc-meta-item">Sumber: <b>LogBook STEP</b></div>
+                <div class="pc-meta-item">Input: <b>Excel .xlsx</b></div>
+                <div class="pc-meta-item">Export: <b>PDF</b></div>
+              </div>
+              <button class="pc-btn">Buka Data Awal →</button>
+            </div>
+          </div>
+
+          <!-- OBSERVASI -->
+          <div class="portal-card obs-card" onclick="openDash('obs')">
+            <div class="pc-glow"></div>
+            <div class="pc-top-bar"></div>
+            <div class="pc-body">
+              <div class="pc-head">
+                <div class="pc-icon">📊</div>
+                <div class="pc-tag">OBS · v3</div>
+              </div>
+              <div class="pc-name">Observasi</div>
+              <div class="pc-desc">Laporan observasi langsung & tidak langsung. Monitoring perkembangan anak dari kunjungan CBR Worker di lapangan.</div>
+              <div class="pc-pills">
+                <span class="pc-pill">📊 Ringkasan</span>
+                <span class="pc-pill">🦴 Struktur Tubuh</span>
+                <span class="pc-pill">🏃 Kegiatan</span>
+                <span class="pc-pill">💭 Personal</span>
+                <span class="pc-pill">🏘️ Lingkungan</span>
+              </div>
+              <div class="pc-meta">
+                <div class="pc-meta-item">Kunjungan: <b>155</b></div>
+                <div class="pc-meta-item">Periode: <b>Mei–Jun 2026</b></div>
+                <div class="pc-meta-item">GPS: <b>149 titik</b></div>
+              </div>
+              <button class="pc-btn">Buka Observasi →</button>
+            </div>
+          </div>
+
         </div>
-        <div class="dc-title">Dashboard Observasi</div>
-        <div class="dc-desc">Laporan observasi langsung &amp; tidak langsung. Monitoring perkembangan anak dari kunjungan CBR Worker di lapangan.</div>
-        <div class="dc-tabs">
-          <span class="dc-tab">📊 Ringkasan</span>
-          <span class="dc-tab">🦴 Struktur Tubuh</span>
-          <span class="dc-tab">🏃 Kegiatan</span>
-          <span class="dc-tab">💭 Personal</span>
-          <span class="dc-tab">🏘️ Lingkungan</span>
-        </div>
-        <div class="dc-meta">
-          <div class="dc-meta-item">Kunjungan: <span>155</span></div>
-          <div class="dc-meta-item">Periode: <span>Mei–Jun 2026</span></div>
-          <div class="dc-meta-item">GPS Terdata: <span>149</span></div>
-        </div>
-        <button class="dc-open-btn" onclick="openDash('obs')">Buka Dashboard Observasi →</button>
       </div>
+    </div>
+  </div>
 
-      <!-- BEN CARD -->
-      <div class="dash-card ben" onclick="openDash('ben')">
-        <div class="dc-header">
-          <div class="dc-icon">👶</div>
-          <div class="dc-badge">BEN · v10</div>
-        </div>
-        <div class="dc-title">Dashboard Benefisiari</div>
-        <div class="dc-desc">Monitoring data benefisiari anak, skor perkembangan, profil pengasuh, dan rekomendasi intervensi berbasis data.</div>
-        <div class="dc-tabs">
-          <span class="dc-tab">👶 Ringkasan Anak</span>
-          <span class="dc-tab">📊 Skor</span>
-          <span class="dc-tab">🧑 Pengasuh</span>
-          <span class="dc-tab">👥 CBR Worker</span>
-          <span class="dc-tab">🗺️ Peta</span>
-          <span class="dc-tab">📋 Data Lengkap</span>
-        </div>
-        <div class="dc-meta">
-          <div class="dc-meta-item">Sumber: <span>LogBook STEP</span></div>
-          <div class="dc-meta-item">Input: <span>Excel .xlsx</span></div>
-          <div class="dc-meta-item">Export: <span>PDF</span></div>
-        </div>
-        <button class="dc-open-btn" onclick="openDash('ben')">Buka Dashboard Benefisiari →</button>
+  <!-- DATA AWAL (BEN) -->
+  <div class="view" id="view-ben">
+    <div class="iframe-view">
+      <div class="iframe-overlay" id="overlay-ben">
+        <div class="loader-ring"></div>
+        <div class="loader-text">Memuat Data Awal...</div>
       </div>
-
-    </div><!-- end dash-grid -->
-  </div><!-- end home-inner -->
-  </div>
-</div>
-
-<!-- OBS DASHBOARD VIEW -->
-<div class="view" id="view-obs">
-  <div class="obs-banner">
-    <div class="banner-dot" style="background:var(--obs)"></div>
-    <span style="color:var(--obs);font-weight:700">Dashboard Observasi</span>
-    <span>— Laporan Observasi Langsung &amp; Tidak Langsung · SCN Manggarai</span>
-    <button class="banner-back" onclick="goHome()">← Kembali ke Portal</button>
-  </div>
-  <div class="dash-iframe-wrap">
-    <div class="iframe-loading" id="loading-obs">
-      <div class="spin"></div>
-      <span>Memuat Dashboard Observasi...</span>
+      <iframe id="iframe-ben" src="" onload="hideOverlay('ben')"></iframe>
     </div>
-    <iframe id="iframe-obs" src="" onload="hideLoading('obs')" style="opacity:0;transition:opacity .3s"></iframe>
   </div>
-</div>
 
-<!-- BEN DASHBOARD VIEW -->
-<div class="view" id="view-ben">
-  <div class="ben-banner">
-    <div class="banner-dot" style="background:var(--ben)"></div>
-    <span style="color:var(--ben);font-weight:700">Dashboard Benefisiari</span>
-    <span>— Monitoring Anak BEN · SCN Manggarai</span>
-    <button class="banner-back" onclick="goHome()">← Kembali ke Portal</button>
-  </div>
-  <div class="dash-iframe-wrap">
-    <div class="iframe-loading" id="loading-ben">
-      <div class="spin"></div>
-      <span>Memuat Dashboard Benefisiari...</span>
+  <!-- OBSERVASI (OBS) -->
+  <div class="view" id="view-obs">
+    <div class="iframe-view">
+      <div class="iframe-overlay" id="overlay-obs">
+        <div class="loader-ring obs-ring"></div>
+        <div class="loader-text">Memuat Dashboard Observasi...</div>
+      </div>
+      <iframe id="iframe-obs" src="" onload="hideOverlay('obs')"></iframe>
     </div>
-    <iframe id="iframe-ben" src="" onload="hideLoading('ben')" style="opacity:0;transition:opacity .3s"></iframe>
   </div>
-</div>
+
+</div><!-- end .main -->
 
 <script>
-const DASH_FILES = {
-  obs: 'dashboard_obs.html',
-  ben: 'dashboard_ben.html'
-};
-
-let loaded = { obs: false, ben: false };
+const FILES = { ben: 'dashboard_ben.html', obs: 'dashboard_obs.html' };
+const loaded = { ben: false, obs: false };
 
 function goHome() {
   showView('home');
@@ -277,7 +309,7 @@ function openDash(id) {
   setNav(id);
   if (!loaded[id]) {
     loaded[id] = true;
-    document.getElementById('iframe-' + id).src = DASH_FILES[id];
+    document.getElementById('iframe-' + id).src = FILES[id];
   }
 }
 
@@ -287,21 +319,22 @@ function showView(id) {
 }
 
 function setNav(id) {
-  document.querySelectorAll('.tnav').forEach(b => b.classList.remove('act'));
-  document.getElementById('nav-' + id).classList.add('act');
+  document.querySelectorAll('.sb-item').forEach(b => {
+    b.classList.remove('act-home','act-ben','act-obs');
+  });
+  const el = document.getElementById('nav-' + id);
+  if (el) el.classList.add('act-' + id);
 }
 
-function hideLoading(id) {
-  document.getElementById('loading-' + id).style.display = 'none';
-  document.getElementById('iframe-' + id).style.opacity = '1';
+function hideOverlay(id) {
+  document.getElementById('overlay-' + id).classList.add('hidden');
 }
 
-// Keyboard shortcut: press 1 = home, 2 = obs, 3 = ben
 document.addEventListener('keydown', e => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
   if (e.key === '1') goHome();
-  if (e.key === '2') openDash('obs');
-  if (e.key === '3') openDash('ben');
+  if (e.key === '2') openDash('ben');
+  if (e.key === '3') openDash('obs');
 });
 </script>
 </body>
