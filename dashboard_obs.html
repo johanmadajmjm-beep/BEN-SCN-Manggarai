@@ -254,17 +254,16 @@ const TGL_VALUES = [3, 8, 10, 9, 2, 16, 12, 3, 2, 4, 3, 2, 3, 5, 10, 7, 4, 8, 16
 const CBR_NAMES  = ["Elfrida Suryati", "Jack Roka", "Laurensius Herbianto", "Leonardus M. Mawardi", "Magdalena Sabe", "Maria Diana Banut", "Miseldis Halmida", "Stanis J. Ngalu"];
 
 // Working data (can be replaced by upload)
-let OBS = (function(){
+let OBS = OBS_STATIC.slice();
+
+// ════ LOCALSTORAGE: PERSIST DATA ACROSS REFRESH ════
+(function(){
   try {
     const saved = localStorage.getItem('scn_obs_data');
-    const fn = localStorage.getItem('scn_obs_file');
-    if (saved) {
-      FILENAME_OBS = fn || FILENAME_OBS;
-      const parsed = JSON.parse(saved);
-      return parsed;
-    }
-  } catch(e) {}
-  return OBS_STATIC.slice();
+    const savedFn = localStorage.getItem('scn_obs_file');
+    if(savedFn) FILENAME_OBS = savedFn;
+    if(saved){ OBS = JSON.parse(saved); }
+  } catch(e){ console.warn('localStorage load failed:', e); }
 })();
 let TF  = JSON.parse(JSON.stringify(THEMES_FULL));
 let FQ  = JSON.parse(JSON.stringify(FULL_QUOTES));
@@ -302,17 +301,17 @@ function labelAnim(vert=true){
 }
 
 // ════ RINGKASAN ════
-function updateKPI() {
-  const unik = [...new Set(OBS.map(r=>r.na).filter(Boolean))].length;
-  const dgGPS = OBS.filter(r=>r.lat&&r.lon).length;
-  const tgls = [...new Set(OBS.map(r=>r.tgl).filter(Boolean))];
-  const el_total = document.getElementById('h-total');
-  const el_unik = document.getElementById('kpi-unik');
-  const el_badge = document.getElementById('dataBadge');
+function updateKPI(){
+  var unik = [...new Set(OBS.map(r=>r.na).filter(Boolean))].length;
+  var dgGPS = OBS.filter(r=>r.lat&&r.lon).length;
+  var tgls = [...new Set(OBS.map(r=>r.tgl).filter(Boolean))];
+  var el_total = document.getElementById('h-total');
+  var el_unik = document.getElementById('kpi-unik');
+  var el_badge = document.getElementById('dataBadge');
   if(el_total) el_total.textContent = OBS.length;
   if(el_unik) el_unik.textContent = unik;
-  if(el_badge) el_badge.textContent = '📁 '+OBS.length+' kunjungan aktif';
-  const kpiVs = document.querySelectorAll('.kpi .v');
+  if(el_badge) el_badge.textContent = String.fromCodePoint(128193)+' '+OBS.length+' kunjungan aktif';
+  var kpiVs = document.querySelectorAll('.kpi .v');
   if(kpiVs[0]) kpiVs[0].textContent = OBS.length;
   if(kpiVs[1]) kpiVs[1].textContent = unik;
   if(kpiVs[2]) kpiVs[2].textContent = tgls.length;
@@ -404,7 +403,7 @@ function openClear(){ document.getElementById('clearModal').classList.add('open'
 function closeClear(){ document.getElementById('clearModal').classList.remove('open'); }
 
 function clearAllData(){
-  try { localStorage.removeItem('scn_obs_data'); localStorage.removeItem('scn_obs_file'); } catch(e) {}
+  try{localStorage.removeItem('scn_obs_data');localStorage.removeItem('scn_obs_file');}catch(e){}
   OBS = OBS_STATIC.slice();
   TF  = JSON.parse(JSON.stringify(THEMES_FULL));
   FQ  = JSON.parse(JSON.stringify(FULL_QUOTES));
@@ -438,9 +437,8 @@ function handleFile(file){
         setStatus('❌ Tidak ada data valid. Pastikan kolom: Nama Anak, CBR Worker, Tanggal ada di Excel.','err'); 
         return; 
       }
-      OBS = parsed;
-      try { localStorage.setItem('scn_obs_data', JSON.stringify(parsed)); localStorage.setItem('scn_obs_file', file.name); } catch(e) {}
-      rebuildAll(parsed);
+      OBS = parsed; rebuildAll(parsed);
+      try{localStorage.setItem('scn_obs_data',JSON.stringify(OBS));localStorage.setItem('scn_obs_file',FILENAME_OBS);}catch(e){}
       Object.keys(CHARTS).forEach(k=>{try{CHARTS[k].destroy();}catch(e){}});
       CHARTS = {};
       renderRingkasan();
