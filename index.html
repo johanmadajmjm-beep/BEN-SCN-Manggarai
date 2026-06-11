@@ -155,11 +155,6 @@ body{background:var(--bg);color:var(--txt);font-family:'Plus Jakarta Sans',syste
 @keyframes spin{to{transform:rotate(360deg)}}
 .loader-text{font-size:12px;color:var(--mut2);font-weight:600}
 
-.sb-item.act-peta{background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.25);color:#22c55e}
-.sb-item.act-peta .sb-icon{background:rgba(34,197,94,.12)}
-.sb-item.act-peta .sb-indicator{background:#22c55e}
-.sb-item.act-peta .sb-badge{background:rgba(34,197,94,.12);color:#22c55e}
-
 .sb{transition:width .25s ease, opacity .25s ease, transform .25s ease}
 .sb.hidden{width:0;opacity:0;overflow:hidden;pointer-events:none;transform:translateX(-10px)}
 </style>
@@ -198,13 +193,6 @@ body{background:var(--bg);color:var(--txt);font-family:'Plus Jakarta Sans',syste
     <div class="sb-badge">OBS</div>
   </div>
 
-
-  <div class="sb-item" id="nav-peta" onclick="openPeta()">
-    <div class="sb-indicator"></div>
-    <div class="sb-icon">🗺️</div>
-    <div class="sb-label">Peta Sebaran</div>
-    <div class="sb-badge">GPS</div>
-  </div>
 
   <div class="sb-footer">
     <div class="sb-status"><div class="dot-live"></div><span style="color:var(--grn);font-weight:700">Online</span></div>
@@ -334,6 +322,7 @@ function openDash(id) {
 function showView(id) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('act'));
   document.getElementById('view-' + id).classList.add('act');
+  try { sessionStorage.setItem('scn_view', id); } catch(e) {}
 }
 
 function setNav(id) {
@@ -344,43 +333,26 @@ function setNav(id) {
   if (el) el.classList.add('act-' + id);
 }
 
-function openPeta() {
-  // Buka view BEN dulu (load iframe kalau belum)
-  showView('ben');
-  setNav('peta');
-  document.querySelector('.sb').classList.remove('hidden');
-  if (!loaded['ben']) {
-    loaded['ben'] = true;
-    const iframe = document.getElementById('iframe-ben');
-    iframe.src = FILES['ben'];
-    // Tunggu load selesai baru kirim perintah switch tab
-    iframe.onload = function() {
-      hideOverlay('ben');
-      setTimeout(() => {
-        iframe.contentWindow.postMessage({ action: 'switchTab', tab: 'peta' }, '*');
-      }, 300);
-      iframe.onload = function() { hideOverlay('ben'); };
-    };
-  } else {
-    // Iframe sudah loaded, langsung kirim perintah
-    setTimeout(() => {
-      document.getElementById('iframe-ben').contentWindow.postMessage(
-        { action: 'switchTab', tab: 'peta' }, '*'
-      );
-    }, 100);
-  }
-}
 
 function hideOverlay(id) {
   document.getElementById('overlay-' + id).classList.add('hidden');
 }
+
+// Restore last view on refresh
+(function() {
+  try {
+    const last = sessionStorage.getItem('scn_view');
+    if (last && last !== 'home') {
+      openDash(last);
+    }
+  } catch(e) {}
+})();
 
 document.addEventListener('keydown', e => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
   if (e.key === '1') goHome();
   if (e.key === '2') openDash('ben');
   if (e.key === '3') openDash('obs');
-  if (e.key === '4') openPeta();
 });
 </script>
 </body>
