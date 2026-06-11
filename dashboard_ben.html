@@ -223,6 +223,11 @@ tr:hover td{background:rgba(79,142,247,.03)}
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:3px}
+
+#pg-peta.act ~ * { }
+body.peta-mode header .nav { display: none !important; }
+body.peta-mode header .hdr-btns { display: none !important; }
+body.peta-mode header .logo small { display: none; }
 </style>
 </head>
 <body>
@@ -235,7 +240,7 @@ tr:hover td{background:rgba(79,142,247,.03)}
     <button onclick="switchTab('pengasuh',this)">🧑 Pengasuh</button>
     <button onclick="switchTab('worker',this)">👥 CBR Worker</button>
     <button onclick="switchTab('reko',this)">🎯 Rekomendasi</button>
-    <button onclick="switchTab('peta',this)">🗺️ Peta</button>
+    
     <button onclick="switchTab('data',this)">📋 Data Lengkap</button>
   </nav>
   <div class="hdr-btns">
