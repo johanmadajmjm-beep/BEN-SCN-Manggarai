@@ -410,6 +410,19 @@ function handleFile(file){
       }
       OBS = parsed;
       rebuildAll(parsed);
+      // Update KPI cards dan hero pills
+      const unik = [...new Set(parsed.map(r=>r.na).filter(Boolean))].length;
+      const dgGPS = parsed.filter(r=>r.lat&&r.lon).length;
+      const tgls = [...new Set(parsed.map(r=>r.tgl).filter(Boolean))];
+      document.getElementById('h-total').textContent = parsed.length;
+      document.getElementById('kpi-unik').textContent = unik;
+      document.getElementById('dataBadge').textContent = '📁 '+parsed.length+' kunjungan aktif';
+      // Update KPI row (Total, Unik, Hari, GPS)
+      const kpiVs = document.querySelectorAll('.kpi .v');
+      if(kpiVs[0]) kpiVs[0].textContent = parsed.length;
+      if(kpiVs[1]) kpiVs[1].textContent = unik;
+      if(kpiVs[2]) kpiVs[2].textContent = tgls.length;
+      if(kpiVs[3]) kpiVs[3].textContent = dgGPS;
       Object.keys(CHARTS).forEach(k=>{try{CHARTS[k].destroy();}catch(e){}});
       CHARTS = {};
       renderRingkasan();
