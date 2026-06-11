@@ -261,23 +261,6 @@ let OBS = (function(){
     if (saved) {
       FILENAME_OBS = fn || FILENAME_OBS;
       const parsed = JSON.parse(saved);
-      // Update KPI langsung saat muat dari localStorage
-      setTimeout(()=>{
-        const unik2 = [...new Set(parsed.map(r=>r.na).filter(Boolean))].length;
-        const dgGPS2 = parsed.filter(r=>r.lat&&r.lon).length;
-        const tgls2 = [...new Set(parsed.map(r=>r.tgl).filter(Boolean))];
-        const el_total = document.getElementById('h-total');
-        const el_unik = document.getElementById('kpi-unik');
-        const el_badge = document.getElementById('dataBadge');
-        if(el_total) el_total.textContent = parsed.length;
-        if(el_unik) el_unik.textContent = unik2;
-        if(el_badge) el_badge.textContent = '📁 '+parsed.length+' kunjungan aktif';
-        const kpiVs2 = document.querySelectorAll('.kpi .v');
-        if(kpiVs2[0]) kpiVs2[0].textContent = parsed.length;
-        if(kpiVs2[1]) kpiVs2[1].textContent = unik2;
-        if(kpiVs2[2]) kpiVs2[2].textContent = tgls2.length;
-        if(kpiVs2[3]) kpiVs2[3].textContent = dgGPS2;
-      }, 100);
       return parsed;
     }
   } catch(e) {}
@@ -319,7 +302,25 @@ function labelAnim(vert=true){
 }
 
 // ════ RINGKASAN ════
+function updateKPI() {
+  const unik = [...new Set(OBS.map(r=>r.na).filter(Boolean))].length;
+  const dgGPS = OBS.filter(r=>r.lat&&r.lon).length;
+  const tgls = [...new Set(OBS.map(r=>r.tgl).filter(Boolean))];
+  const el_total = document.getElementById('h-total');
+  const el_unik = document.getElementById('kpi-unik');
+  const el_badge = document.getElementById('dataBadge');
+  if(el_total) el_total.textContent = OBS.length;
+  if(el_unik) el_unik.textContent = unik;
+  if(el_badge) el_badge.textContent = '📁 '+OBS.length+' kunjungan aktif';
+  const kpiVs = document.querySelectorAll('.kpi .v');
+  if(kpiVs[0]) kpiVs[0].textContent = OBS.length;
+  if(kpiVs[1]) kpiVs[1].textContent = unik;
+  if(kpiVs[2]) kpiVs[2].textContent = tgls.length;
+  if(kpiVs[3]) kpiVs[3].textContent = dgGPS;
+}
+
 function renderRingkasan(){
+  updateKPI();
   mk('c-cbr','bar',{
     labels: CBR_LABELS,
     datasets:[{data:CBR_VALUES,backgroundColor:CBR_COLORS_LIST,borderRadius:6,borderSkipped:false}]
@@ -440,17 +441,6 @@ function handleFile(file){
       OBS = parsed;
       try { localStorage.setItem('scn_obs_data', JSON.stringify(parsed)); localStorage.setItem('scn_obs_file', file.name); } catch(e) {}
       rebuildAll(parsed);
-      const unik = [...new Set(parsed.map(r=>r.na).filter(Boolean))].length;
-      const dgGPS = parsed.filter(r=>r.lat&&r.lon).length;
-      const tgls = [...new Set(parsed.map(r=>r.tgl).filter(Boolean))];
-      document.getElementById('h-total').textContent = parsed.length;
-      document.getElementById('kpi-unik').textContent = unik;
-      document.getElementById('dataBadge').textContent = '📁 '+parsed.length+' kunjungan aktif';
-      const kpiVs = document.querySelectorAll('.kpi .v');
-      if(kpiVs[0]) kpiVs[0].textContent = parsed.length;
-      if(kpiVs[1]) kpiVs[1].textContent = unik;
-      if(kpiVs[2]) kpiVs[2].textContent = tgls.length;
-      if(kpiVs[3]) kpiVs[3].textContent = dgGPS;
       Object.keys(CHARTS).forEach(k=>{try{CHARTS[k].destroy();}catch(e){}});
       CHARTS = {};
       renderRingkasan();
