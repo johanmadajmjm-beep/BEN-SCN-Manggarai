@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SCN Manggarai – Data Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #07090f;
+  --sur: #0d1220;
+  --card: #111827;
+  --card2: #161f30;
+  --bdr: #1e2d47;
+  --bdr2: #253654;
+  --acc: #06b6d4;
+  --acc2: #0891b2;
+  --grn: #22c55e;
+  --amb: #f59e0b;
+  --red: #ef4444;
+  --pur: #a78bfa;
+  --txt: #e8edf5;
+  --mut: #6b7a96;
+  --faint: #1a2540;
+  --obs: #06b6d4;
+  --ben: #a78bfa;
+  --rnd: 12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;min-height:100vh;overflow-x:hidden}
+
+/* ── TOPBAR ── */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:300;height:52px;background:rgba(7,9,15,.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--bdr);display:flex;align-items:center;padding:0 20px;gap:16px}
+.topbar-logo{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.logo-mark{width:32px;height:32px;background:linear-gradient(135deg,var(--acc),var(--pur));border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff;letter-spacing:-.5px;flex-shrink:0}
+.logo-text{font-size:13px;font-weight:700;color:var(--txt);line-height:1.2}
+.logo-text small{display:block;font-size:10px;font-weight:400;color:var(--mut)}
+.topbar-nav{display:flex;align-items:center;gap:2px;margin-left:20px}
+.tnav{padding:5px 12px;border-radius:7px;border:none;background:transparent;color:var(--mut);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap}
+.tnav:hover{color:var(--txt);background:var(--faint)}
+.tnav.act{color:var(--acc);background:rgba(6,182,212,.12)}
+.tnav.obs.act{color:var(--obs);background:rgba(6,182,212,.12)}
+.tnav.ben.act{color:var(--ben);background:rgba(167,139,250,.12)}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--grn);animation:pulse 2.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.version-badge{font-size:10px;color:var(--mut);background:var(--faint);padding:3px 8px;border-radius:20px;border:1px solid var(--bdr)}
+
+/* ── VIEWS ── */
+.view{display:none;padding-top:52px;min-height:100vh}
+.view.act{display:block}
+
+/* ── HOME PAGE ── */
+.home-wrap{max-width:1100px;margin:0 auto;padding:40px 24px 60px}
+
+.home-hero{text-align:center;padding:60px 20px 50px;position:relative}
+.hero-eyebrow{display:inline-block;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--acc);background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.2);padding:5px 14px;border-radius:20px;margin-bottom:20px}
+.hero-title{font-family:'Manrope',sans-serif;font-size:42px;font-weight:800;line-height:1.15;letter-spacing:-1.5px;color:var(--txt);margin-bottom:14px}
+.hero-title .accent-obs{color:var(--obs)}
+.hero-title .accent-ben{color:var(--ben)}
+.hero-sub{font-size:15px;color:var(--mut);max-width:540px;margin:0 auto 36px;line-height:1.75}
+.hero-stats{display:flex;gap:32px;justify-content:center;flex-wrap:wrap;margin-bottom:0}
+.hstat{text-align:center}
+.hstat .val{font-size:28px;font-weight:800;line-height:1;font-family:'Manrope',sans-serif}
+.hstat .lbl{font-size:11px;color:var(--mut);margin-top:4px;text-transform:uppercase;letter-spacing:.6px}
+
+.section-title{font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--mut);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.section-title::before{content:'';width:20px;height:2px;background:var(--acc);border-radius:1px}
+
+/* ── DASHBOARD CARDS ── */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px}
+@media(max-width:700px){.dash-grid{grid-template-columns:1fr}}
+
+.dash-card{background:var(--card);border:1px solid var(--bdr);border-radius:16px;padding:24px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden}
+.dash-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--dc-color,var(--acc));opacity:.8}
+.dash-card:hover{border-color:var(--dc-color,var(--acc));transform:translateY(-2px);background:var(--card2)}
+.dash-card:hover .dc-arrow{opacity:1;transform:translateX(0)}
+
+.dc-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
+.dc-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.dc-badge{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:4px 10px;border-radius:20px;border:1px solid;flex-shrink:0}
+.dc-arrow{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;opacity:0;transform:translateX(-4px);transition:all .2s;flex-shrink:0}
+
+.dc-title{font-size:18px;font-weight:800;line-height:1.2;margin-bottom:6px;font-family:'Manrope',sans-serif}
+.dc-desc{font-size:12px;color:var(--mut);line-height:1.65;margin-bottom:18px}
+
+.dc-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
+.dc-tab{font-size:11px;font-weight:600;padding:3px 9px;border-radius:6px;background:var(--faint);color:var(--mut);border:1px solid var(--bdr)}
+
+.dc-meta{display:flex;gap:16px;flex-wrap:wrap}
+.dc-meta-item{font-size:11px;color:var(--mut)}
+.dc-meta-item span{color:var(--txt);font-weight:600}
+
+.dc-open-btn{display:flex;align-items:center;gap:6px;margin-top:20px;padding:10px 16px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;width:100%;justify-content:center;transition:all .15s}
+
+/* OBS card */
+.dash-card.obs{--dc-color:var(--obs)}
+.dash-card.obs .dc-icon{background:rgba(6,182,212,.12);color:var(--obs)}
+.dash-card.obs .dc-badge{background:rgba(6,182,212,.1);border-color:rgba(6,182,212,.3);color:var(--obs)}
+.dash-card.obs .dc-title{color:var(--obs)}
+.dash-card.obs .dc-arrow{background:rgba(6,182,212,.1);color:var(--obs)}
+.dash-card.obs .dc-open-btn{background:rgba(6,182,212,.12);border:1px solid rgba(6,182,212,.3);color:var(--obs)}
+.dash-card.obs .dc-open-btn:hover{background:rgba(6,182,212,.2)}
+
+/* BEN card */
+.dash-card.ben{--dc-color:var(--ben)}
+.dash-card.ben .dc-icon{background:rgba(167,139,250,.12);color:var(--ben)}
+.dash-card.ben .dc-badge{background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.3);color:var(--ben)}
+.dash-card.ben .dc-title{color:var(--ben)}
+.dash-card.ben .dc-arrow{background:rgba(167,139,250,.1);color:var(--ben)}
+.dash-card.ben .dc-open-btn{background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.3);color:var(--ben)}
+.dash-card.ben .dc-open-btn:hover{background:rgba(167,139,250,.2)}
+
+/* ── INFO ROW ── */
+.info-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:36px}
+.info-card{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:16px}
+.info-card .ic-val{font-size:22px;font-weight:800;font-family:'Manrope',sans-serif;line-height:1}
+.info-card .ic-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.7px;color:var(--mut);margin-top:5px}
+.info-card .ic-sub{font-size:11px;color:var(--mut);margin-top:3px}
+
+/* ── ACTIVITY FEED ── */
+.activity-section{background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:20px}
+.act-item{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--bdr)}
+.act-item:last-child{border-bottom:none;padding-bottom:0}
+.act-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.act-text{font-size:12px;color:var(--txt);line-height:1.5}
+.act-time{font-size:11px;color:var(--mut);margin-top:2px}
+
+/* ── IFRAME VIEWS ── */
+.dash-iframe-wrap{height:calc(100vh - 52px);position:relative}
+.dash-iframe-wrap iframe{width:100%;height:100%;border:none;display:block}
+.iframe-loading{position:absolute;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;font-size:13px;color:var(--mut)}
+.spin{width:32px;height:32px;border:2px solid var(--bdr);border-top-color:var(--acc);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── BANNER ── */
+.obs-banner{background:rgba(6,182,212,.06);border-bottom:1px solid rgba(6,182,212,.15);padding:6px 16px;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--mut);position:sticky;top:52px;z-index:200}
+.ben-banner{background:rgba(167,139,250,.06);border-bottom:1px solid rgba(167,139,250,.15);padding:6px 16px;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--mut);position:sticky;top:52px;z-index:200}
+.banner-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.banner-back{margin-left:auto;padding:3px 10px;border-radius:6px;border:none;background:transparent;border:1px solid var(--bdr);color:var(--mut);font-family:inherit;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s}
+.banner-back:hover{color:var(--txt);border-color:var(--bdr2)}
+
+/* ── FOOTER ── */
+.portal-footer{text-align:center;padding:20px;font-size:11px;color:var(--mut);border-top:1px solid var(--bdr);margin-top:20px}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-logo" onclick="goHome()" style="cursor:pointer">
+    <div class="logo-mark">SCN</div>
+    <div class="logo-text">Data Portal<small>SCN Manggarai · NTT</small></div>
+  </div>
+  <div class="topbar-nav">
+    <button class="tnav act" id="nav-home" onclick="goHome()">🏠 Beranda</button>
+    <button class="tnav obs" id="nav-obs" onclick="openDash('obs')">📊 Observasi</button>
+    <button class="tnav ben" id="nav-ben" onclick="openDash('ben')">👶 Benefisiari</button>
+  </div>
+  <div class="topbar-right">
+    <div class="status-dot" title="Sistem aktif"></div>
+    <span class="version-badge">v2.0 · 2026</span>
+  </div>
+</div>
+
+<!-- HOME VIEW -->
+<div class="view act" id="view-home">
+  <div class="home-wrap">
+
+    <!-- HERO -->
+    <div class="home-hero">
+      <div class="hero-eyebrow">Building Effective Network · SCN Manggarai</div>
+      <h1 class="hero-title">
+        Portal Data<br>
+        <span class="accent-obs">Observasi</span> &amp; <span class="accent-ben">Benefisiari</span>
+      </h1>
+      <p class="hero-sub">Satu pintu untuk memantau seluruh data program BEN SCN Manggarai — dari laporan observasi lapangan hingga monitoring perkembangan anak.</p>
+      <div class="hero-stats">
+        <div class="hstat"><div class="val" style="color:var(--obs)">2</div><div class="lbl">Dashboard Aktif</div></div>
+        <div class="hstat"><div class="val" style="color:var(--grn)">155</div><div class="lbl">Kunjungan Terekam</div></div>
+        <div class="hstat"><div class="val" style="color:var(--ben)">8</div><div class="lbl">CBR Worker</div></div>
+        <div class="hstat"><div class="val" style="color:var(--amb)">NTT</div><div class="lbl">Wilayah</div></div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD CARDS -->
+    <div class="section-title">Dashboard Tersedia</div>
+    <div class="dash-grid">
+
+      <!-- OBS CARD -->
+      <div class="dash-card obs" onclick="openDash('obs')">
+        <div class="dc-header">
+          <div class="dc-icon">📊</div>
+          <div class="dc-badge">OBS · v3</div>
+        </div>
+        <div class="dc-title">Dashboard Observasi</div>
+        <div class="dc-desc">Laporan observasi langsung &amp; tidak langsung. Monitoring perkembangan anak dari kunjungan CBR Worker di lapangan.</div>
+        <div class="dc-tabs">
+          <span class="dc-tab">📊 Ringkasan</span>
+          <span class="dc-tab">🦴 Struktur Tubuh</span>
+          <span class="dc-tab">🏃 Kegiatan</span>
+          <span class="dc-tab">💭 Personal</span>
+          <span class="dc-tab">🏘️ Lingkungan</span>
+        </div>
+        <div class="dc-meta">
+          <div class="dc-meta-item">Kunjungan: <span>155</span></div>
+          <div class="dc-meta-item">Periode: <span>Mei–Jun 2026</span></div>
+          <div class="dc-meta-item">GPS Terdata: <span>149</span></div>
+        </div>
+        <button class="dc-open-btn" onclick="openDash('obs')">Buka Dashboard Observasi →</button>
+      </div>
+
+      <!-- BEN CARD -->
+      <div class="dash-card ben" onclick="openDash('ben')">
+        <div class="dc-header">
+          <div class="dc-icon">👶</div>
+          <div class="dc-badge">BEN · v10</div>
+        </div>
+        <div class="dc-title">Dashboard Benefisiari</div>
+        <div class="dc-desc">Monitoring data benefisiari anak, skor perkembangan, profil pengasuh, dan rekomendasi intervensi berbasis data.</div>
+        <div class="dc-tabs">
+          <span class="dc-tab">👶 Ringkasan Anak</span>
+          <span class="dc-tab">📊 Skor</span>
+          <span class="dc-tab">🧑 Pengasuh</span>
+          <span class="dc-tab">👥 CBR Worker</span>
+          <span class="dc-tab">🗺️ Peta</span>
+          <span class="dc-tab">📋 Data Lengkap</span>
+        </div>
+        <div class="dc-meta">
+          <div class="dc-meta-item">Sumber: <span>LogBook STEP</span></div>
+          <div class="dc-meta-item">Input: <span>Excel .xlsx</span></div>
+          <div class="dc-meta-item">Export: <span>PDF</span></div>
+        </div>
+        <button class="dc-open-btn" onclick="openDash('ben')">Buka Dashboard Benefisiari →</button>
+      </div>
+
+    </div>
+
+    <!-- INFO ROW -->
+    <div class="section-title">Status Sistem</div>
+    <div class="info-row">
+      <div class="info-card">
+        <div class="ic-val" style="color:var(--grn)">Online</div>
+        <div class="ic-lbl">Status Portal</div>
+        <div class="ic-sub">Berjalan normal</div>
+      </div>
+      <div class="info-card">
+        <div class="ic-val" style="color:var(--obs)">2 Aktif</div>
+        <div class="ic-lbl">Dashboard</div>
+        <div class="ic-sub">OBS v3 · BEN v10</div>
+      </div>
+      <div class="info-card">
+        <div class="ic-val" style="color:var(--amb)">Excel</div>
+        <div class="ic-lbl">Format Input</div>
+        <div class="ic-sub">.xlsx · SheetJS parser</div>
+      </div>
+      <div class="info-card">
+        <div class="ic-val" style="color:var(--pur)">NTT</div>
+        <div class="ic-lbl">Wilayah Kerja</div>
+        <div class="ic-sub">Manggarai Raya, Flores</div>
+      </div>
+    </div>
+
+    <!-- ACTIVITY -->
+    <div class="section-title">Panduan Penggunaan</div>
+    <div class="activity-section">
+      <div class="act-item">
+        <div class="act-dot" style="background:var(--obs)"></div>
+        <div>
+          <div class="act-text"><strong style="color:var(--obs)">Dashboard Observasi</strong> — Klik "Buka Dashboard Observasi" lalu upload file Excel laporan observasi (.xlsx). Data langsung terproses dan semua grafik terupdate otomatis.</div>
+        </div>
+      </div>
+      <div class="act-item">
+        <div class="act-dot" style="background:var(--ben)"></div>
+        <div>
+          <div class="act-text"><strong style="color:var(--ben)">Dashboard Benefisiari</strong> — Klik "Buka Dashboard Benefisiari" lalu upload file LogBook STEP (.xlsx, sheet "Data Awal"). Mendukung peta GPS, skor anak, dan profil pengasuh.</div>
+        </div>
+      </div>
+      <div class="act-item">
+        <div class="act-dot" style="background:var(--grn)"></div>
+        <div>
+          <div class="act-text"><strong style="color:var(--grn)">Export PDF</strong> — Setiap dashboard memiliki tombol "Export PDF" untuk menghasilkan laporan siap cetak.</div>
+        </div>
+      </div>
+      <div class="act-item">
+        <div class="act-dot" style="background:var(--mut)"></div>
+        <div>
+          <div class="act-text"><strong style="color:var(--txt)">Privasi Data</strong> — Semua data diproses langsung di browser. Tidak ada data yang dikirim ke server manapun.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="portal-footer">
+      SCN Manggarai · Building Effective Network · Portal Data v2.0 · 2026
+    </div>
+  </div>
+</div>
+
+<!-- OBS DASHBOARD VIEW -->
+<div class="view" id="view-obs">
+  <div class="obs-banner">
+    <div class="banner-dot" style="background:var(--obs)"></div>
+    <span style="color:var(--obs);font-weight:700">Dashboard Observasi</span>
+    <span>— Laporan Observasi Langsung &amp; Tidak Langsung · SCN Manggarai</span>
+    <button class="banner-back" onclick="goHome()">← Kembali ke Portal</button>
+  </div>
+  <div class="dash-iframe-wrap">
+    <div class="iframe-loading" id="loading-obs">
+      <div class="spin"></div>
+      <span>Memuat Dashboard Observasi...</span>
+    </div>
+    <iframe id="iframe-obs" src="" onload="hideLoading('obs')" style="opacity:0;transition:opacity .3s"></iframe>
+  </div>
+</div>
+
+<!-- BEN DASHBOARD VIEW -->
+<div class="view" id="view-ben">
+  <div class="ben-banner">
+    <div class="banner-dot" style="background:var(--ben)"></div>
+    <span style="color:var(--ben);font-weight:700">Dashboard Benefisiari</span>
+    <span>— Monitoring Anak BEN · SCN Manggarai</span>
+    <button class="banner-back" onclick="goHome()">← Kembali ke Portal</button>
+  </div>
+  <div class="dash-iframe-wrap">
+    <div class="iframe-loading" id="loading-ben">
+      <div class="spin"></div>
+      <span>Memuat Dashboard Benefisiari...</span>
+    </div>
+    <iframe id="iframe-ben" src="" onload="hideLoading('ben')" style="opacity:0;transition:opacity .3s"></iframe>
+  </div>
+</div>
+
+<script>
+const DASH_FILES = {
+  obs: 'dashboard_obs.html',
+  ben: 'dashboard_ben.html'
+};
+
+let loaded = { obs: false, ben: false };
+
+function goHome() {
+  showView('home');
+  setNav('home');
+}
+
+function openDash(id) {
+  showView(id);
+  setNav(id);
+  if (!loaded[id]) {
+    loaded[id] = true;
+    document.getElementById('iframe-' + id).src = DASH_FILES[id];
+  }
+}
+
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('act'));
+  document.getElementById('view-' + id).classList.add('act');
+}
+
+function setNav(id) {
+  document.querySelectorAll('.tnav').forEach(b => b.classList.remove('act'));
+  document.getElementById('nav-' + id).classList.add('act');
+}
+
+function hideLoading(id) {
+  document.getElementById('loading-' + id).style.display = 'none';
+  document.getElementById('iframe-' + id).style.opacity = '1';
+}
+
+// Keyboard shortcut: press 1 = home, 2 = obs, 3 = ben
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.key === '1') goHome();
+  if (e.key === '2') openDash('obs');
+  if (e.key === '3') openDash('ben');
+});
+</script>
+</body>
+</html>
