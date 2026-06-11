@@ -254,7 +254,8 @@ let TGL_VALUES = [3, 8, 10, 9, 2, 16, 12, 3, 2, 4, 3, 2, 3, 5, 10, 7, 4, 8, 16];
 let CBR_NAMES = ["Elfrida Suryati", "Jack Roka", "Laurensius Herbianto", "Leonardus M. Mawardi", "Magdalena Sabe", "Maria Diana Banut", "Miseldis Halmida", "Stanis J. Ngalu"];
 
 // Working data (can be replaced by upload)
-let OBS = OBS_STATIC.slice();
+// OBS default kosong — data dari localStorage atau upload
+let OBS = [];
 
 // ════ LOCALSTORAGE: PERSIST DATA ACROSS REFRESH ════
 (function(){
@@ -264,8 +265,8 @@ let OBS = OBS_STATIC.slice();
     if(savedFn) FILENAME_OBS = savedFn;
     if(saved){
       OBS = JSON.parse(saved);
-      rebuildAll(OBS);       // update TF dan FQ dari data tersimpan
-      rebuildChartVars();    // update CBR_LABELS, TGL_LABELS, dll
+      rebuildAll(OBS);
+      rebuildChartVars();
     }
   } catch(e){ console.warn('localStorage load failed:', e); }
 })();
@@ -305,53 +306,9 @@ function labelAnim(vert=true){
 }
 
 // ════ RINGKASAN ════
-function rebuildChartVars(){
-  var cbrMap = {}, cbrNameMap = {};
-  OBS.forEach(function(r){
-    var full = (r.cb||'').trim();
-    var key = full.split(' ').pop();
-    if(!key) return;
-    cbrMap[key] = (cbrMap[key]||0)+1;
-    cbrNameMap[key] = full;
-  });
-  var keys = Object.keys(cbrMap).sort();
-  var palette = ["#4f8ef7","#22c55e","#f59e0b","#a78bfa","#ef4444","#06b6d4","#f97316","#84cc16","#ec4899","#14b8a6"];
-  CBR_LABELS = keys;
-  CBR_VALUES = keys.map(function(k){ return cbrMap[k]; });
-  CBR_NAMES  = keys.map(function(k){ return cbrNameMap[k]; });
-  CBR_COLORS_LIST = keys.map(function(_,i){ return palette[i%palette.length]; });
-
-  var tglMap = {};
-  OBS.forEach(function(r){
-    var t = (r.tgl||'').trim();
-    if(!t) return;
-    tglMap[t] = (tglMap[t]||0)+1;
-  });
-  var tglKeys = Object.keys(tglMap).sort();
-  TGL_LABELS = tglKeys.map(function(t){
-    var d = new Date(t);
-    return isNaN(d) ? t : d.toLocaleDateString('id-ID',{day:'numeric',month:'short'});
-  });
-  TGL_VALUES = tglKeys.map(function(k){ return tglMap[k]; });
-}
-
-function updateKPI(){
-  var unik = [...new Set(OBS.map(function(r){return r.na;}).filter(Boolean))].length;
-  var dgGPS = OBS.filter(function(r){return r.lat&&r.lon;}).length;
-  var tgls = [...new Set(OBS.map(function(r){return r.tgl;}).filter(Boolean))];
-  var el = document.getElementById('h-total'); if(el) el.textContent = OBS.length;
-  var el2 = document.getElementById('kpi-unik'); if(el2) el2.textContent = unik;
-  var el3 = document.getElementById('dataBadge'); if(el3) el3.textContent = String.fromCodePoint(128193)+' '+OBS.length+' kunjungan aktif';
-  var kv = document.querySelectorAll('.kpi .v');
-  if(kv[0]) kv[0].textContent = OBS.length;
-  if(kv[1]) kv[1].textContent = unik;
-  if(kv[2]) kv[2].textContent = tgls.length;
-  if(kv[3]) kv[3].textContent = dgGPS;
-}
-
 function renderRingkasan(){
   updateKPI();
-
+  rebuildChartVars();
   mk('c-cbr','bar',{
     labels: CBR_LABELS,
     datasets:[{data:CBR_VALUES,backgroundColor:CBR_COLORS_LIST,borderRadius:6,borderSkipped:false}]
@@ -436,7 +393,7 @@ function closeClear(){ document.getElementById('clearModal').classList.remove('o
 
 function clearAllData(){
   try{localStorage.removeItem('scn_obs_data');localStorage.removeItem('scn_obs_file');}catch(e){}
-  OBS = OBS_STATIC.slice(); rebuildAll(OBS); rebuildChartVars();
+  OBS = [];
   TF  = JSON.parse(JSON.stringify(THEMES_FULL));
   FQ  = JSON.parse(JSON.stringify(FULL_QUOTES));
   Object.keys(CHARTS).forEach(k=>{try{CHARTS[k].destroy();}catch(e){}});
@@ -524,8 +481,19 @@ function parseOBS(headers, rows){
     if(na.includes('uuid:')||na.includes('rootUuid')) continue;
     
     const tgl = sv(row, iTgl)||'';
-    // Parse date: might be datetime string
-    const tglDate = tgl.substring(0,10); // YYYY-MM-DD
+    // Parse tanggal — handle YYYY-MM-DD, DD/MM/YYYY, DD-MM-YYYY
+    function parseTgl(s){
+      if(!s) return '';
+      s = s.trim().split(' ')[0]; // ambil bagian tanggal saja
+      // DD/MM/YYYY atau DD-MM-YYYY
+      const dmy = s.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);
+      if(dmy) return dmy[3]+'-'+dmy[2].padStart(2,'0')+'-'+dmy[1].padStart(2,'0');
+      // YYYY-MM-DD atau YYYY/MM/DD
+      const ymd = s.match(/^(\d{4})[\/-](\d{1,2})[\/-](\d{1,2})/);
+      if(ymd) return ymd[1]+'-'+ymd[2].padStart(2,'0')+'-'+ymd[3].padStart(2,'0');
+      return s.substring(0,10);
+    }
+    const tglDate = parseTgl(tgl);
     
     if(!byName[na]||tglDate>byName[na].tgl){
       byName[na] = {
@@ -542,6 +510,57 @@ function parseOBS(headers, rows){
     }
   }
   return Object.values(byName);
+}
+
+
+function updateKPI(){
+  var unik = [...new Set(OBS.map(function(r){return r.na;}).filter(Boolean))].length;
+  var dgGPS = OBS.filter(function(r){return r.lat&&r.lon;}).length;
+  var tgls = [...new Set(OBS.map(function(r){return r.tgl;}).filter(Boolean))];
+  var el = document.getElementById('h-total'); if(el) el.textContent = OBS.length;
+  var el2 = document.getElementById('kpi-unik'); if(el2) el2.textContent = unik;
+  var el3 = document.getElementById('dataBadge');
+  if(el3) el3.textContent = OBS.length ? (String.fromCodePoint(128193)+' '+OBS.length+' kunjungan aktif') : 'Belum ada data diunggah';
+  var kv = document.querySelectorAll('.kpi .v');
+  if(kv[0]) kv[0].textContent = OBS.length || '—';
+  if(kv[1]) kv[1].textContent = unik || '—';
+  if(kv[2]) kv[2].textContent = tgls.length || '—';
+  if(kv[3]) kv[3].textContent = dgGPS || '—';
+}
+
+function rebuildChartVars(){
+  var cbrMap = {}, cbrNameMap = {};
+  OBS.forEach(function(r){
+    var full = (r.cb||'').trim();
+    var key = full.split(' ').pop();
+    if(!key) return;
+    cbrMap[key] = (cbrMap[key]||0)+1;
+    cbrNameMap[key] = full;
+  });
+  var keys = Object.keys(cbrMap).sort();
+  var palette = ["#4f8ef7","#22c55e","#f59e0b","#a78bfa","#ef4444","#06b6d4","#f97316","#84cc16","#ec4899","#14b8a6"];
+  CBR_LABELS = keys;
+  CBR_VALUES = keys.map(function(k){ return cbrMap[k]; });
+  CBR_NAMES  = keys.map(function(k){ return cbrNameMap[k]; });
+  CBR_COLORS_LIST = keys.map(function(_,i){ return palette[i%palette.length]; });
+
+  // Tanggal — sudah dalam format YYYY-MM-DD, sort ascending
+  var tglMap = {};
+  OBS.forEach(function(r){
+    var t = (r.tgl||'').trim();
+    if(!t) return;
+    tglMap[t] = (tglMap[t]||0)+1;
+  });
+  var tglKeys = Object.keys(tglMap).sort(); // sort YYYY-MM-DD = kronologis benar
+  TGL_LABELS = tglKeys.map(function(t){
+    var parts = t.split('-');
+    if(parts.length===3){
+      var d = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
+      return isNaN(d) ? t : d.toLocaleDateString('id-ID',{day:'numeric',month:'short'});
+    }
+    return t;
+  });
+  TGL_VALUES = tglKeys.map(function(k){ return tglMap[k]; });
 }
 
 function rebuildAll(parsed){
