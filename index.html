@@ -270,7 +270,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Plus Jakarta Sans',syste
         <div class="loader-ring"></div>
         <div class="loader-text">Memuat Data Awal...</div>
       </div>
-      <iframe id="iframe-ben" src="" onload="hideOverlay('ben')"></iframe>
+      <iframe id="iframe-ben" src=""></iframe>
     </div>
   </div>
 
@@ -281,7 +281,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Plus Jakarta Sans',syste
         <div class="loader-ring obs-ring"></div>
         <div class="loader-text">Memuat Dashboard Observasi...</div>
       </div>
-      <iframe id="iframe-obs" src="" onload="hideOverlay('obs')"></iframe>
+      <iframe id="iframe-obs" src=""></iframe>
     </div>
   </div>
 
@@ -303,7 +303,9 @@ function openDash(id) {
   document.querySelector('.sb').classList.remove('hidden');
   if (!loaded[id]) {
     loaded[id] = true;
-    document.getElementById('iframe-' + id).src = FILES[id];
+    const iframe = document.getElementById('iframe-' + id);
+    iframe.addEventListener('load', function() { hideOverlay(id); }, { once: true });
+    iframe.src = FILES[id];
   }
 }
 
