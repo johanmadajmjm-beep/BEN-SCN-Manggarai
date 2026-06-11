@@ -1707,6 +1707,15 @@ function renderAll(){
 }
 
 renderAll();
+
+// postMessage bridge — terima perintah dari portal
+window.addEventListener('message', function(e) {
+  if (e.data && e.data.action === 'switchTab') {
+    var btn = document.querySelector(".nav button[onclick*='" + e.data.tab + "']");
+    if (btn) switchTab(e.data.tab, btn);
+  }
+});
+
 </script>
 </body>
 </html>
