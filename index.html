@@ -157,6 +157,19 @@ body{background:var(--bg);color:var(--txt);font-family:'Plus Jakarta Sans',syste
 
 .sb{transition:width .25s ease, opacity .25s ease, transform .25s ease}
 .sb.hidden{width:0;opacity:0;overflow:hidden;pointer-events:none;transform:translateX(-10px)}
+
+.dash-card.anak{--dc-color:var(--pur)}
+.dash-card.anak .dc-icon{background:rgba(167,139,250,.12);color:var(--pur)}
+.dash-card.anak .dc-badge{background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.3);color:var(--pur)}
+.dash-card.anak .dc-title{color:var(--pur)}
+.dash-card.anak .dc-arrow{background:rgba(167,139,250,.1);color:var(--pur)}
+.dash-card.anak .dc-open-btn{background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.3);color:var(--pur)}
+.dash-card.anak .dc-open-btn:hover{background:rgba(167,139,250,.2)}
+
+.sb-item.act-anak{background:rgba(167,139,250,.08);border-color:rgba(167,139,250,.25);color:#a78bfa}
+.sb-item.act-anak .sb-icon{background:rgba(167,139,250,.12)}
+.sb-item.act-anak .sb-indicator{background:#a78bfa}
+.sb-item.act-anak .sb-badge{background:rgba(167,139,250,.12);color:#a78bfa}
 </style>
 </head>
 <body>
@@ -193,6 +206,13 @@ body{background:var(--bg);color:var(--txt);font-family:'Plus Jakarta Sans',syste
     <div class="sb-badge">OBS</div>
   </div>
 
+
+  <div class="sb-item" id="nav-anak" onclick="openDash('anak')">
+    <div class="sb-indicator"></div>
+    <div class="sb-icon">👶</div>
+    <div class="sb-label">Profil Anak</div>
+    <div class="sb-badge">ANAK</div>
+  </div>
 
   <div class="sb-footer">
     <div class="sb-status"><div class="dot-live"></div><span style="color:var(--grn);font-weight:700">Online</span></div>
@@ -274,6 +294,17 @@ body{background:var(--bg);color:var(--txt);font-family:'Plus Jakarta Sans',syste
     </div>
   </div>
 
+  <!-- PROFIL ANAK -->
+  <div class="view" id="view-anak">
+    <div class="iframe-view">
+      <div class="iframe-overlay" id="overlay-anak">
+        <div class="loader-ring" style="border-top-color:#a78bfa"></div>
+        <div class="loader-text">Memuat Profil Anak...</div>
+      </div>
+      <iframe id="iframe-anak" src=""></iframe>
+    </div>
+  </div>
+
   <!-- OBSERVASI (OBS) -->
   <div class="view" id="view-obs">
     <div class="iframe-view">
@@ -288,8 +319,8 @@ body{background:var(--bg);color:var(--txt);font-family:'Plus Jakarta Sans',syste
 </div><!-- end .main -->
 
 <script>
-const FILES = { ben: 'dashboard_ben.html', obs: 'dashboard_obs.html' };
-const loaded = { ben: false, obs: false };
+const FILES = { ben: 'dashboard_ben.html', obs: 'dashboard_obs.html', anak: 'dashboard_anak.html' };
+const loaded = { ben: false, obs: false, anak: false };
 
 function goHome() {
   showView('home');
@@ -324,6 +355,11 @@ function setNav(id) {
 }
 
 
+// Handle postMessage dari dashboard anak (goHome)
+window.addEventListener('message', function(e) {
+  if (e.data && e.data.action === 'goHome') goHome();
+});
+
 function hideOverlay(id) {
   document.getElementById('overlay-' + id).classList.add('hidden');
 }
@@ -332,7 +368,7 @@ function hideOverlay(id) {
 (function() {
   try {
     const last = sessionStorage.getItem('scn_view');
-    if (last && last !== 'home') {
+    if (last && ['ben','obs','anak'].includes(last)) {
       openDash(last);
     }
   } catch(e) {}
@@ -343,6 +379,7 @@ document.addEventListener('keydown', e => {
   if (e.key === '1') goHome();
   if (e.key === '2') openDash('ben');
   if (e.key === '3') openDash('obs');
+  if (e.key === '4') openDash('anak');
 });
 </script>
 </body>
