@@ -95,7 +95,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Plus Jakarta Sans',syste
 .home-title em{font-style:normal;color:var(--ben)}
 .home-desc{font-size:14px;color:var(--mut2);line-height:1.8;max-width:500px}
 
-.home-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.home-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
 @media(max-width:680px){.home-cards{grid-template-columns:1fr}}
 
 /* ── PORTAL CARD ── */
@@ -275,6 +275,28 @@ body{background:var(--bg);color:var(--txt);font-family:'Plus Jakarta Sans',syste
                 <span class="pc-pill">💭 Personal</span>
                 <span class="pc-pill">🏘️ Lingkungan</span>
               </div><button class="pc-btn">Buka Observasi →</button>
+            </div>
+          </div>
+
+          <!-- KARTU PROFIL ANAK -->
+          <div class="portal-card" onclick="openDash('anak')" style="background:linear-gradient(145deg,#100a18,#0e1628);border-color:rgba(167,139,250,.25)">
+            <div class="pc-glow" style="background:#a78bfa"></div>
+            <div class="pc-top-bar" style="background:linear-gradient(90deg,#a78bfa,#c4b5fd,transparent)"></div>
+            <div class="pc-body">
+              <div class="pc-head">
+                <div class="pc-icon" style="background:rgba(167,139,250,.12);color:#a78bfa">👶</div>
+                <div class="pc-tag" style="background:rgba(167,139,250,.12);color:#a78bfa;border-color:rgba(167,139,250,.3)">ANAK · v1</div>
+              </div>
+              <div class="pc-name" style="color:#a78bfa">Profil Anak</div>
+              <div class="pc-desc">Profil lengkap setiap anak benefisiari — data dari Data Awal dan laporan observasi lapangan dalam satu halaman.</div>
+              <div class="pc-pills">
+                <span class="pc-pill">👶 Daftar Anak</span>
+                <span class="pc-pill">📋 Data Awal</span>
+                <span class="pc-pill">📊 Observasi</span>
+                <span class="pc-pill">⭐ Skor</span>
+                <span class="pc-pill">📍 GPS</span>
+              </div>
+              <button class="pc-btn" style="background:#a78bfa;color:#fff" onclick="openDash('anak')">Buka Profil Anak →</button>
             </div>
           </div>
 
