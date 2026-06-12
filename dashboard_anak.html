@@ -157,6 +157,23 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'Plus Ja
 .ls-score{font-size:13px;font-weight:800;width:36px;text-align:right;flex-shrink:0}
 .ls-obs{font-size:10px;width:100px;text-align:right;flex-shrink:0}
 
+
+/* ── PANEL NAMA (muncul saat profil dibuka) ── */
+.panel-wrap{display:flex;flex:1;overflow:hidden}
+.nama-panel{width:200px;flex-shrink:0;background:var(--sur);border-right:1px solid var(--bdr);overflow-y:auto;display:none;flex-direction:column}
+.nama-panel.open{display:flex}
+.np-header{padding:12px 14px 8px;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--mut);border-bottom:1px solid var(--bdr);flex-shrink:0}
+.np-search{padding:8px 10px;border-bottom:1px solid var(--bdr);flex-shrink:0}
+.np-search input{width:100%;background:var(--faint);border:1px solid var(--bdr);color:var(--txt);border-radius:6px;padding:5px 9px;font-size:11px;outline:none;font-family:inherit}
+.np-search input:focus{border-color:var(--pur)}
+.np-list{flex:1;overflow-y:auto;padding:4px 0}
+.np-item{padding:8px 14px;cursor:pointer;transition:background .12s;font-size:12px;font-weight:600;color:var(--mut2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:7px;border-left:3px solid transparent}
+.np-item:hover{background:var(--faint);color:var(--txt)}
+.np-item.act{background:rgba(167,139,250,.1);color:var(--pur);border-left-color:var(--pur)}
+.np-avatar{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;flex-shrink:0}
+.np-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.main-content{flex:1;overflow-y:auto;padding:16px 20px}
+
 </style>
 </head>
 <body>
@@ -179,7 +196,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'Plus Ja
 </div>
 
 <!-- CONTENT -->
-<div class="content">
+<div class="panel-wrap"><div class="nama-panel" id="namaPanel"><div class="np-header">Daftar Anak</div><div class="np-search"><input type="text" id="npSearch" placeholder="Cari..." oninput="filterNamaPanel()"></div><div class="np-list" id="npList"></div></div><div class="main-content" id="mainContent">
 
   <!-- VIEW LIST -->
   <div class="view act" id="view-list">
@@ -257,7 +274,8 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'Plus Ja
     <div id="profilContent"></div>
   </div>
 
-</div><!-- end content -->
+</div><!-- end main-content -->
+</div><!-- end panel-wrap -->
 </div><!-- end app -->
 
 <script>
@@ -541,6 +559,52 @@ function populateFilters() {
   ragams.forEach(function(r){ rSel.innerHTML+='<option value="'+escHtml(r)+'">'+escHtml(r)+'</option>'; });
 }
 
+
+// ── PANEL NAMA ──
+var currentAnak = null;
+
+function buildNamaPanel(activeName) {
+  var list = document.getElementById('npList');
+  var q = (document.getElementById('npSearch').value||'').toLowerCase();
+  list.innerHTML = '';
+  var sorted = DATA_AWAL.slice().sort(function(a,b){
+    return (a.na||'').localeCompare(b.na||'','id');
+  });
+  sorted.forEach(function(a) {
+    if (q && (a.na||'').toLowerCase().indexOf(q) < 0) return;
+    var color = getRagamColor(a.rg);
+    var div = document.createElement('div');
+    div.className = 'np-item' + ((a.na===activeName)?' act':'');
+    div.title = a.na||'';
+    div.onclick = function(){ showProfil(a.na); };
+    div.innerHTML =
+      '<div class="np-avatar" style="background:'+color+'22;color:'+color+'">'+getInisial(a.na)+'</div>'+
+      '<div class="np-name">'+(a.na||'—')+'</div>';
+    list.appendChild(div);
+  });
+}
+
+function filterNamaPanel() {
+  buildNamaPanel(currentAnak);
+}
+
+function openNamaPanel(activeName) {
+  currentAnak = activeName;
+  document.getElementById('namaPanel').classList.add('open');
+  buildNamaPanel(activeName);
+  // Scroll ke anak aktif
+  setTimeout(function(){
+    var actEl = document.querySelector('.np-item.act');
+    if (actEl) actEl.scrollIntoView({block:'center',behavior:'smooth'});
+  }, 50);
+}
+
+function closeNamaPanel() {
+  document.getElementById('namaPanel').classList.remove('open');
+  currentAnak = null;
+  document.getElementById('npSearch').value = '';
+}
+
 // ── PROFIL ──
 function showProfil(nama) {
   var a = DATA_AWAL.find(function(d){ return (d.na||'').trim()===(nama||'').trim(); });
@@ -628,7 +692,8 @@ function showProfil(nama) {
   document.getElementById('profilContent').innerHTML = html;
   document.getElementById('view-list').classList.remove('act');
   document.getElementById('view-profil').classList.add('act');
-  document.querySelector('.content').scrollTop = 0;
+  document.querySelector('.main-content').scrollTop = 0;
+  openNamaPanel(a.na);
 
   // Update topbar
   document.getElementById('topbar-list').style.display = 'none';
@@ -654,7 +719,8 @@ function showList() {
   document.getElementById('topbar-list').style.display = 'block';
   document.getElementById('topbar-profil').style.display = 'none';
   document.getElementById('backBtn').style.display = 'none';
-  document.querySelector('.content').scrollTop = 0;
+  document.querySelector('.main-content').scrollTop = 0;
+  closeNamaPanel();
 }
 
 // ── INIT ──
