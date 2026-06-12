@@ -95,11 +95,11 @@ body{background:var(--bg);color:var(--txt);font-family:'Plus Jakarta Sans',syste
 .home-title em{font-style:normal;color:var(--ben)}
 .home-desc{font-size:14px;color:var(--mut2);line-height:1.8;max-width:500px}
 
-.home-cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.home-cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:stretch}
 @media(max-width:680px){.home-cards{grid-template-columns:1fr}}
 
 /* ── PORTAL CARD ── */
-.portal-card{border-radius:var(--rnd);padding:0;cursor:pointer;transition:all .22s;position:relative;overflow:hidden;border:1px solid var(--bdr)}
+.portal-card{border-radius:var(--rnd);padding:0;cursor:pointer;transition:all .22s;position:relative;overflow:hidden;border:1px solid var(--bdr);display:flex;flex-direction:column}
 .portal-card:hover{transform:translateY(-3px)}
 
 .pc-glow{position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;opacity:.12;pointer-events:none}
@@ -115,7 +115,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Plus Jakarta Sans',syste
 .ben-card .pc-top-bar{background:linear-gradient(90deg,var(--ben),var(--ben2),transparent)}
 .obs-card .pc-top-bar{background:linear-gradient(90deg,var(--obs),var(--obs2),transparent)}
 
-.pc-body{padding:22px 22px 20px}
+.pc-body{padding:22px 22px 20px;display:flex;flex-direction:column;flex:1}
 
 .pc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .pc-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
@@ -128,7 +128,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Plus Jakarta Sans',syste
 .pc-name{font-family:'Manrope',sans-serif;font-size:20px;font-weight:800;line-height:1.2;margin-bottom:6px}
 .ben-card .pc-name{color:var(--ben)}
 .obs-card .pc-name{color:var(--obs)}
-.pc-desc{font-size:12px;color:var(--mut2);line-height:1.7;margin-bottom:16px}
+.pc-desc{font-size:12px;color:var(--mut2);line-height:1.7;margin-bottom:16px;flex:1}
 
 .pc-pills{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:18px}
 .pc-pill{font-size:10px;font-weight:600;padding:3px 8px;border-radius:6px;background:rgba(255,255,255,.04);border:1px solid var(--bdr);color:var(--mut2)}
